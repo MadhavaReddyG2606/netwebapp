@@ -3,3 +3,46 @@
 # Add steps that publish symbols, save build artifacts, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
+trigger:
+  branches:
+    include:
+      - master
+      - develop
+
+pool:
+  vmImage : 'windows-latest'
+
+stages:
+  - stage: 'Build'
+    displayName: 'Build .Net Web Application'
+    variables:
+      solution : '**/*.sln'
+      buildplatform : 'Any CPU'
+      buildconfiguration : 'Release'  
+    pool:
+      vmImage : 'windows-latest'
+    jobs:
+    - job: 'Build'
+      displayName: 'Build Job'
+      steps :
+      - task : NuGetToolInstaller@1
+      - task: NuGetCommand@2
+        inputs:
+          restoreSolution: '$solution'
+      
+      - task: VSBuild@1
+        inputs:
+          solution: '$(solution)'
+          msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
+          platform: '$(buildPlatform)'
+          configuration: '$(buildConfiguration)'
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          ArtifactName: 'drop'
+          publishLocation: 'Container'   
+      
+    
+
+
+  - stage:  'Deployment'

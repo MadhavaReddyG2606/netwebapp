@@ -39,4 +39,4 @@ steps:
 - task: IISWebAppDeploymentOnMachineGroup@0
   inputs:
     WebSiteName: 'test'
-    Package: '$(System.DefaultWorkingDirectory)\**\*.zip'
+    Package: '$(build.artifactStagingDirectory)\**\*.zip'

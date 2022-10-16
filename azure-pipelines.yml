@@ -41,6 +41,35 @@ stages:
           PathtoPublish: '$(Build.ArtifactStagingDirectory)'
           ArtifactName: 'drop'
           publishLocation: 'Container'   
-      
+
+  - stage: 'Deploy'
+    displayName: 'Deploy the web application'
+    dependsOn: Build
+    jobs:
+    - deployment: 'DeployToDev'
+      displayName: 'Deploy the web application to dev environment'
+      variables:
+        Parameters.IISDeploymentType: 'IISWebsite'
+        Parameters.ActionIISWebsite: 'CreateOrUpdateWebsite'
+        Parameters.WebsiteName: 'Default Web Site'
+        Parameters.WebsitePhysicalPath: '%SystemDrive%\inetpub\wwwroot\AspNetDemo'
+        Parameters.AddBinding: false
+        Parameters.VirtualPathForApplication: '/AspNetDemo'
+        Parameters.AppPoolName: ''
+        Parameters.VirtualApplication: 'AspNetDemo'
+        Parameters.Package: '$(Pipeline.Workspace)\drop\*.zip'
+        Parameters.RemoveAdditionalFilesFlag: true
+        Parameters.TakeAppOfflineFlag: true
+        Parameters.XmlTransformation: true
+        Parameters.XmlVariableSubstitution: true
+      environment:
+        name: Dev
+        resourceType: VirtualMachine
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - download: current
+              artifact: drop  
     
 

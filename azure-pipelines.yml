@@ -71,5 +71,29 @@ stages:
             steps:
             - download: current
               artifact: drop  
+            - task: IISWebAppManagementOnMachineGroup@0
+              displayName: 'IIS Web App Manage'
+              inputs:
+                IISDeploymentType: '$(Parameters.IISDeploymentType)'
+                ActionIISWebsite: '$(Parameters.ActionIISWebsite)'
+                WebsiteName: '$(Parameters.WebsiteName)'
+                WebsitePhysicalPath: '$(Parameters.WebsitePhysicalPath)'
+                AddBinding: $(Parameters.AddBinding)
+                ParentWebsiteNameForVD: '$(Parameters.WebsiteName)'
+                VirtualPathForVD: '$(Parameters.VirtualPathForApplication)'
+                ParentWebsiteNameForApplication: '$(Parameters.WebsiteName)'
+                VirtualPathForApplication: '$(Parameters.VirtualPathForApplication)'
+                AppPoolName: '$(Parameters.AppPoolName)'
+  
+            - task: IISWebAppDeploymentOnMachineGroup@0
+              displayName: 'IIS Web App Deploy'
+              inputs:
+                WebSiteName: '$(Parameters.WebsiteName)'
+                VirtualApplication: '$(Parameters.VirtualApplication)'
+                Package: '$(Parameters.Package)'
+                RemoveAdditionalFilesFlag: $(Parameters.RemoveAdditionalFilesFlag)
+                TakeAppOfflineFlag: $(Parameters.TakeAppOfflineFlag)
+                XmlTransformation: $(Parameters.XmlTransformation)
+                XmlVariableSubstitution: $(Parameters.XmlVariableSubstitution)
     
 
